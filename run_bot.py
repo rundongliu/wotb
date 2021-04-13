@@ -1,6 +1,17 @@
 import pyautogui
 import time
 import random
+from datetime import datetime
+import sys
+
+pyautogui.FAILSAFE = True
+
+key_state = {
+    'w': False,
+    's': False,
+    'a': False,
+    'd': False  
+}
 
 screen_size = pyautogui.size()
 END_X = 600
@@ -20,6 +31,19 @@ else:
 
     CANCEL_X = 850
     CANCEL_Y= 685
+
+def hold_keys(hold_keys):
+    for key in key_state:
+        if key in hold_keys:
+            if not key_state[key]: # if not pressed
+                print('press key:', key)
+                pyautogui.keyDown(key)
+            key_state[key] = True
+        else:
+            if key_state[key]:
+                pyautogui.keyUp(key)
+            key_state[key] = False
+
 
 
 def start_game():
@@ -44,76 +68,67 @@ def shoot():
     print('shoot...')
     pyautogui.click(START_X, START_Y)
 
-def move_straight(seconds=30):
-    print('press down key: w')
-    pyautogui.keyDown('w')
-    time.sleep(seconds)
-    pyautogui.keyUp('w')
+def move_turret():
+    pyautogui.moveTo(750, 450)
+    pyautogui.keyDown('ctrl')
+    pyautogui.drag(random.randint(-1000,1000), random.randint(-300,300), 2, button='left') 
+    pyautogui.keyUp('ctrl')
 
+def move_straight():
+    turn_time = 0.5
+    for i in range(5):
+        hold_keys('w')
+        print(key_state)
+        time.sleep(4)
+
+
+        hold_keys('wa')
+        print(key_state)
+        time.sleep(turn_time)
+
+        hold_keys('wd')
+        print(key_state)
+        time.sleep(turn_time)
+
+        turn_time += 0.5
 
 def random_move():
-    print('press down key: w')
-    pyautogui.keyDown('w') 
-    time.sleep(random.randint(0,5))
-    print('press down key: a')
-    if random.randint(0,10)<=7:
-        pyautogui.keyDown('a')
-        #time.sleep(random.randint(0,6))
 
-        # pyautogui.mouseDown(button='right') 
-        # time.sleep(random.randint(0,6))
-        # pyautogui.mouseUp(button='right')
-
-        print('press up key: a')
-        pyautogui.keyUp('a')
+    for i in range(2):
+        hold_keys('w')
+        move_turret()
+        print(key_state)
+        time.sleep(random.randint(0,10)/10.0)
 
 
-    #turet_move_pixel = 1000
-    #print('move turret...')
-    #pyautogui.move(random.randint(0-turet_move_pixel, turet_move_pixel), 0, 5)
-    #shoot()
+        hold_keys('wa')
+        print(key_state)
+        time.sleep(random.randint(0,10)/10.0)
 
-    if random.randint(0,10)<=7:
-        print('press down key: d')
-        pyautogui.keyDown('d')
-        #time.sleep(random.randint(0,6))
-
-        # pyautogui.mouseDown(button='right') 
-        # time.sleep(random.randint(0,6))
-        # pyautogui.mouseUp(button='right')
-
-        print('press up key: d')
-        pyautogui.keyUp('d')
-     # Move mouse 10 pixels down from its current position.
-    time.sleep(random.randint(0,5))
-    
-    print('press up key: w')
-    pyautogui.keyUp('w')
+        hold_keys('wd')
+        print(key_state)
+        time.sleep(random.randint(0,10)/10.0)
 
 
-    print('press down key: s')
-    pyautogui.keyDown('s') 
-    time.sleep(random.randint(0,2))
-    if random.randint(0,10)<=7:
-        print('press down key: a')
-        pyautogui.keyDown('a')
-        time.sleep(random.randint(0,3))
-        print('press up key: a')
-        pyautogui.keyUp('a')
+    hold_keys('s')
+    move_turret()
+    time.sleep(random.randint(0,10)/10.0)
 
-    if random.randint(0,10)<=7:
-        print('press down key: d')
-        pyautogui.keyDown('d')
-        time.sleep(random.randint(0,3))
-        print('press up key: d')
-        pyautogui.keyUp('d')
-     # Move mouse 10 pixels down from its current position.
-    time.sleep(random.randint(0,2))
-    
-    print('press up key: s')
-    pyautogui.keyUp('s')
+    hold_keys('sa')
+    print(key_state)
+    move_turret()
+    time.sleep(random.randint(0,10)/10.0)
 
+    if random.randint(0,10)<=3:
+        #shoot()
+        pass
 
+    hold_keys('sd')
+    print(key_state)
+    move_turret()
+    time.sleep(random.randint(0,10)/10.0)
+
+    pyautogui.press('7')
 
 def check_end_game_page(BLACK_PIXEL=15):
     print('check end game page')
@@ -122,31 +137,50 @@ def check_end_game_page(BLACK_PIXEL=15):
         return True
     return False
 
+def type_something():
+    words = ['Laaaaaging', 'network lag af', 'dam, too lagging', 'ipad control sucks', 'why so lagging', 'ping so high',
+    'bad ping', 'this phone sucks', 'lag as sht', '500 ping']
+    pyautogui.press('enter')
+    pyautogui.write(random.choice(words))
+    pyautogui.press('enter')
+
+
 def run_one_game():
     start_game()
-    time.sleep(20)
+    time.sleep(45)
     move_straight()
-    for i in range(100):
-        if i%2==0:
-            pyautogui.mouseDown(button='right') 
+    for i in range(10000):
+        # if i%2==0:
+        #     pyautogui.mouseDown(button='right') 
         #time.sleep(20)
         random_move()
+        if i%2400==0:
+            type_something()
 
-        if i%2==0:
-            pyautogui.mouseUp(button='right') 
+        # if i%2==0:
+        #     pyautogui.mouseUp(button='right') 
 
         if check_end_game_page():
             exit_end_game_page()
             time.sleep(1)
-            
             break
+
     time.sleep(1)
 
+if len(sys.argv)>=2:
+    start_time = sys.argv[1]
+    print('expecting time set: ', start_time)
+else:
+    start_time = None
 
-for i in range(500):
-    # pyautogui.move(random.randint(0-1000, 1000), 0, 5)
-    # print(pyautogui.position())
-    # time.sleep(3)
-    #time.sleep(1)
+while 1:
+    if start_time:
+        current_time = datetime.now().strftime("%m/%d/%H:%M:%S")
+        if current_time < start_time:
+            print('current_time: ', current_time)
+            print('expecting: ', start_time)
+            time.sleep(600)
+            continue
+    
     handle_alert()
     run_one_game()

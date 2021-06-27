@@ -147,7 +147,7 @@ def type_something():
 
 def run_one_game():
     start_game()
-    time.sleep(45)
+    time.sleep(120)
     move_straight()
     for i in range(10000):
         # if i%2==0:
@@ -173,7 +173,7 @@ if len(sys.argv)>=2:
 else:
     start_time = None
 
-while 1:
+for i in range(5000):
     if start_time:
         current_time = datetime.now().strftime("%m/%d/%H:%M:%S")
         if current_time < start_time:
